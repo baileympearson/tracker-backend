@@ -1,14 +1,14 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import logger from 'morgan';
 
 import usersRouter from './routes/users';
 import indexRouter from './routes/index';
 
-var app = express();
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
