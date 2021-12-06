@@ -1,13 +1,22 @@
 import { MongoClient } from "mongodb";
+import { Config } from "../config/config.model";
+import config from '../config'
 
-let client : MongoClient
+let client: MongoClient
+
+function makeUri(config: Config) {
+    if (config.environment === 'dev') {
+        const { port, host } = config.db
+        return `mongodb://${host}:${port}/tracker`
+    }
+}
 
 export async function connect(): Promise<MongoClient> {
     if (client != null) {
         return client
     }
 
-    const connection_string = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/tracker${process.env.DEBUG === 'true' ? '_test' : ""}`
+    const connection_string = makeUri(config);
     client = new MongoClient(connection_string)
     await client.connect()
 
