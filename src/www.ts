@@ -7,6 +7,9 @@
 import app from './app';
 import debugFn from 'debug';
 import http from 'http';
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 const debug = debugFn('skunkworks:server');
 /**
