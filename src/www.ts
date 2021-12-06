@@ -17,7 +17,7 @@ async function start() {
 
   await connect()
 
-  app.listen(() => {
+  app.listen(port, () => {
     console.log("Server started successfully");
   })
 }
