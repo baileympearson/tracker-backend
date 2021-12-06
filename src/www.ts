@@ -6,6 +6,7 @@
 
 import app from './app';
 import dotenv from 'dotenv';
+import { connect } from './db/db';
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const port = normalizePort(process.env.PORT || '3000');
 async function start() {
   app.set('port', port);
 
+  await connect()
 
   app.listen(() => {
     console.log("Server started successfully");
