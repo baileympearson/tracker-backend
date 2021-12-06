@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "tsc && node ./bin/www",
-    "debug": "tsc && DEBUG=myapp:* node ./bin/www"
+    "debug": "tsc && DEBUG=true node ./bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

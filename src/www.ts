@@ -5,37 +5,21 @@
  */
 
 import app from './app';
-import debugFn from 'debug';
-import http from 'http';
 import dotenv from 'dotenv';
 
 dotenv.config()
 
-const debug = debugFn('skunkworks:server');
-/**
- * Get port from environment and store in Express.
- */
-
 const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+async function start() {
+  app.set('port', port);
 
-const server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+  app.listen(() => {
+    console.log("Server started successfully");
+  })
+}
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
 
 function normalizePort(val: string) {
   const port = parseInt(val);
@@ -81,14 +65,4 @@ function onError(error: any) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string' ?
-    'pipe ' + addr :
-    'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+start()
