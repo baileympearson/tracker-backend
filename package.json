@@ -5,7 +5,7 @@
   "scripts": {
     "start": "tsc && node ./bin/www",
     "debug": "tsc && ENV=dev DEBUG=true node ./bin/www",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'"
+    "test": "ENV=dev env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

@@ -6,7 +6,7 @@ import { schemaValidator } from "../middleware/schema-validator";
 
 const router = Router()
 
-async function handlers() {
+async function dbHandlers() {
     const client = await connect()
     const collection = client.db().collection<CaffeineEntry>('caffeine')
     return caffeineClient(collection);
@@ -16,7 +16,7 @@ async function postHandler(req: Request, res: Response) {
     const body = req.body
     console.log(body)
 
-    const { add } = await handlers()
+    const { add } = await dbHandlers()
 
     try {
         await add(body as CaffeineEntry)
@@ -27,7 +27,7 @@ async function postHandler(req: Request, res: Response) {
     }
 }
 
-router.post('/entry',
+router.post('/',
     schemaValidator(caffeineEntrySchema),
     postHandler
 )
