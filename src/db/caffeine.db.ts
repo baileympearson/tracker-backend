@@ -3,8 +3,8 @@ import { CaffeineEntry } from '../models/caffeine.model'
 
 type CaffeineCollection = Collection<CaffeineEntry>
 
-export default function(collection: CaffeineCollection) {
-    async function getAll()  {
+export default function (collection: CaffeineCollection) {
+    async function getAll() {
         return await collection.find().toArray()
     }
 
@@ -16,8 +16,40 @@ export default function(collection: CaffeineCollection) {
         }
     }
 
+    async function totalCaffeinePerDay(date: string, options?: { returnMgCaffine?: boolean }) {
+        options = options ?? {} 
+
+        const pipeline = [{
+            $match: {
+                date: date
+            }
+        }, {
+            $group: {
+                _id: "$date",
+                "total": { $sum: "$numericValue" }
+            }
+        }]
+
+        if (options.returnMgCaffine) {
+            pipeline.push({
+                $project: {
+                    "total": { $multiply: ["$total", 140] }
+                }
+            } as any)
+        }
+
+        try {
+            const results = await collection.aggregate(pipeline).toArray()
+            return results
+        } catch {
+            console.error("something went wrong")
+            return Promise.reject()
+        }
+    }
+
     return {
         getAll,
-        add
+        add,
+        totalCaffeinePerDay
     }
 }
