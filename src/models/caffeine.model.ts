@@ -11,11 +11,7 @@ export interface CaffeineEntry {
     date: string
 }
 
-export const caffeineEntrySchema = Joi.object({
-    value: Joi.string().valid(...amountOfCaffeine).required(),
-    numericValue: Joi.number().valid(...numericValue).required(),
-    date: Joi.string().required()
-})
+
 
 export interface TotalCaffeineQuery {
     date: string // YYYY-MM-DD
@@ -26,3 +22,13 @@ export const totalCaffeineQuerySchema = Joi.object({
     date: Joi.string().required(),
     returnMgCaffeine: Joi.boolean()
 })
+
+const caffeineEntry = {
+    value: Joi.string().valid(...amountOfCaffeine),
+    numericValue: Joi.number().valid(...numericValue),
+    date: Joi.string()
+}
+
+export const partialCaffeineEntrySchema = Joi.object(caffeineEntry)
+
+export const caffeineEntrySchema = Joi.object(caffeineEntry).fork(Object.keys(caffeineEntry), (schema) => schema.required())

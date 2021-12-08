@@ -18,7 +18,7 @@ describe.only('caffeine db test', () => {
 
     afterEach(() => sandbox.reset())
 
-    describe('totalCaffeinePerDay tests', () => {
+    describe.skip('totalCaffeinePerDay tests', () => {
         it('defaults to numeric value', async () => {
             const { totalCaffeinePerDay } = handlers;     
 

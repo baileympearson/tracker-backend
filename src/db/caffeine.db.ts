@@ -4,8 +4,8 @@ import { CaffeineEntry } from '../models/caffeine.model'
 type CaffeineCollection = Collection<CaffeineEntry>
 
 export default function (collection: CaffeineCollection) {
-    async function getAll() {
-        return await collection.find().toArray()
+    async function get(filter: Partial<CaffeineEntry> = {}) {
+        return await collection.find(filter).toArray()
     }
 
     async function add(entry: CaffeineEntry) {
@@ -49,7 +49,7 @@ export default function (collection: CaffeineCollection) {
     }
 
     return {
-        getAll,
+        getAll: get,
         add,
         totalCaffeinePerDay
     }
