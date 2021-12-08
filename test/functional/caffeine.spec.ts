@@ -66,7 +66,6 @@ describe('/caffeine functional tests', () => {
                     .end((err, res) => {
                         const { status } = res;
                         const body = res.body 
-                        console.error(body)
                         expect(status).to.equal(200);
                         expect(body.total).to.equal(2)
                         done();
@@ -80,7 +79,6 @@ describe('/caffeine functional tests', () => {
                     .end((err, res) => {
                         const { status } = res;
                         const body = res.body 
-                        console.error(body)
                         expect(status).to.equal(200);
                         expect(body.total).to.equal(0)
                         done();
@@ -94,7 +92,6 @@ describe('/caffeine functional tests', () => {
                     .end((err, res) => {
                         const { status } = res;
                         const body = res.body 
-                        console.error(body)
                         expect(status).to.equal(200);
                         expect(body.total).to.equal(280)
                         done();
