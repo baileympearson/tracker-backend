@@ -41,18 +41,64 @@ describe('/caffeine functional tests', () => {
 
             it('should successfully add the document', (done) => {
                 chai.request(app)
-                        .post('/caffeine')
-                        .send(validEntry)
-                        .end((err, res) => {
-                            const { status } = res;
-                            const body = res.body as CaffeineEntry
-                            expect(status).to.equal(201);
-                            expect(body.date).to.equal(validEntry.date)
-                            expect(body.numericValue).to.equal(validEntry.numericValue)
-                            expect(body.value).to.equal(validEntry.value)
-                            expect(body).to.have.property('_id')
-                            done();
-                        });
+                    .post('/caffeine')
+                    .send(validEntry)
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body as CaffeineEntry
+                        expect(status).to.equal(201);
+                        expect(body.date).to.equal(validEntry.date)
+                        expect(body.numericValue).to.equal(validEntry.numericValue)
+                        expect(body.value).to.equal(validEntry.value)
+                        expect(body).to.have.property('_id')
+                        done();
+                    });
+            });
+        });
+    })
+
+    describe('GET', () => {
+        describe('GET /totalCaffeine', () => {
+            it('return the total if the days exist and no mg caffeine specified', (done) => {
+                chai.request(app)
+                    .get('/caffeine/totalCaffeine')
+                    .send({ date: "2021-12-07"})
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body 
+                        console.error(body)
+                        expect(status).to.equal(200);
+                        expect(body.total).to.equal(2)
+                        done();
+                    });
+            });
+
+            it('return the total of 0 if the date DNE in the database', (done) => {
+                chai.request(app)
+                    .get('/caffeine/totalCaffeine')
+                    .send({ date: "2019-12-07"})
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body 
+                        console.error(body)
+                        expect(status).to.equal(200);
+                        expect(body.total).to.equal(0)
+                        done();
+                    });
+            });
+
+            it('return the total mg of caffeine if returnMgCaffeine is set to true', (done) => {
+                chai.request(app)
+                    .get('/caffeine/totalCaffeine')
+                    .send({ date: "2021-12-07", returnMgCaffeine: true })
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body 
+                        console.error(body)
+                        expect(status).to.equal(200);
+                        expect(body.total).to.equal(280)
+                        done();
+                    });
             });
         });
     })

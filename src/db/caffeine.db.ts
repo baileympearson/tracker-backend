@@ -16,8 +16,8 @@ export default function (collection: CaffeineCollection) {
         }
     }
 
-    async function totalCaffeinePerDay(date: string, options?: { returnMgCaffine?: boolean }) {
-        options = options ?? {} 
+    async function totalCaffeinePerDay(date: string, options?: { returnMgCaffeine?: boolean }) {
+        options = options ?? {}
 
         const pipeline = [{
             $match: {
@@ -30,7 +30,7 @@ export default function (collection: CaffeineCollection) {
             }
         }]
 
-        if (options.returnMgCaffine) {
+        if (options.returnMgCaffeine) {
             pipeline.push({
                 $project: {
                     "total": { $multiply: ["$total", 140] }
@@ -40,7 +40,8 @@ export default function (collection: CaffeineCollection) {
 
         try {
             const results = await collection.aggregate(pipeline).toArray()
-            return results
+            const total = results[0]?.total ?? 0;
+            return { total }
         } catch {
             console.error("something went wrong")
             return Promise.reject()

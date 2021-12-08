@@ -16,3 +16,13 @@ export const caffeineEntrySchema = Joi.object({
     numericValue: Joi.number().valid(...numericValue).required(),
     date: Joi.string().required()
 })
+
+export interface TotalCaffeineQuery {
+    date: string // YYYY-MM-DD
+    returnMgCaffeine?: boolean
+}
+
+export const totalCaffeineQuerySchema = Joi.object({
+    date: Joi.string().required(),
+    returnMgCaffeine: Joi.boolean()
+})
