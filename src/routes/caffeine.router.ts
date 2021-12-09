@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { connect } from "../db/db";
 import caffeineClient from '../db/caffeine.db';
-import { CaffeineEntry, caffeineEntrySchema, TotalCaffeineQuery, totalCaffeineQuerySchema } from "../models/caffeine.model";
+import { CaffeineEntry, caffeineEntrySchema, partialCaffeineEntrySchema, TotalCaffeineQuery, totalCaffeineQuerySchema } from "../models/caffeine.model";
 import { schemaValidator } from "../middleware/schema-validator";
 
 const router = Router()
@@ -40,6 +40,26 @@ async function totalCaffeineHandler(req: Request, res: Response) {
         res.status(500)
     }
 }
+
+async function getCaffeineEntriesHandler(req: Request, res: Response) {
+    const filter = req.body as Partial<CaffeineEntry>
+
+    const { getAll } = await dbHandlers()
+
+    try {
+        const entries = await getAll(filter)
+        res.status(200).send(entries)
+    } catch {
+        console.error("Something went wrong")
+        res.sendStatus(500)
+    }
+}
+
+
+router.get('',
+    schemaValidator(partialCaffeineEntrySchema),
+    getCaffeineEntriesHandler
+)
 
 router.get('/totalCaffeine',
     schemaValidator(totalCaffeineQuerySchema),

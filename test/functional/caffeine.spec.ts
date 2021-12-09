@@ -3,11 +3,20 @@ import app from '../../src/app';
 import chai, { expect } from 'chai';
 import { setupServer } from "../utils";
 import { CaffeineEntry } from "../../src/models/caffeine.model";
+import { connect } from "../../src/db/db";
 
 chai.use(chaiHttp);
 
+const mockCaffeineData = require('../../mockdata/caffeine');
+
 describe('/caffeine functional tests', () => {
     before(setupServer);
+
+    beforeEach(async () => {
+        const client = await connect()
+        await client.db('tracker').collection('caffeine').deleteMany({})
+        await client.db('tracker').collection('caffeine').insertMany(mockCaffeineData)
+    })
 
     describe('POST', () => {
         describe('POST /caffeine', () => {
@@ -17,8 +26,8 @@ describe('/caffeine functional tests', () => {
                 { numericValue: .5 }
             ]
             invalidEntries.forEach(entry => {
-                it('it fails when the entry is empty', (done) => {
-                    const invalidEntry: Partial<CaffeineEntry> = {}
+                it(`fails when the entry is ${entry}`, (done) => {
+                    const invalidEntry: Partial<CaffeineEntry> = entry
                     chai.request(app)
                         .post('/caffeine')
                         .send(invalidEntry)
@@ -39,7 +48,7 @@ describe('/caffeine functional tests', () => {
                 numericValue: 1
             }
 
-            it('should successfully add the document', (done) => {
+            it.only('should successfully add the document', (done) => {
                 chai.request(app)
                     .post('/caffeine')
                     .send(validEntry)
@@ -58,6 +67,34 @@ describe('/caffeine functional tests', () => {
     })
 
     describe('GET', () => {
+        describe('GET /', () => {
+            it('with no filter options, it returns everything in db', (done) => {
+                chai.request(app)
+                    .get('/caffeine')
+                    .send({})
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body 
+                        expect(status).to.equal(200);
+                        expect(body).to.have.property('length').to.equal(mockCaffeineData.length)
+                        done();
+                    });
+            });
+
+            it('returns all the entries for a given day', (done) => {
+                chai.request(app)
+                    .get('/caffeine')
+                    .send({ date: "2021-12-07" })
+                    .end((err, res) => {
+                        const { status } = res;
+                        const body = res.body 
+                        expect(status).to.equal(200);
+                        expect(body).to.have.property('length').to.equal(3)
+                        done();
+                    });
+            });
+        });
+
         describe('GET /totalCaffeine', () => {
             it('return the total if the days exist and no mg caffeine specified', (done) => {
                 chai.request(app)
