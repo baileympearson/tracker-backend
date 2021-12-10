@@ -14,7 +14,6 @@ async function dbHandlers() {
 
 async function postHandler(req: Request, res: Response) {
     const body = req.body
-    console.log(body)
 
     const { add } = await dbHandlers()
 

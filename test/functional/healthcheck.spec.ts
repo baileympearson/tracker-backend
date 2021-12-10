@@ -6,11 +6,11 @@ import { setupServer } from "../utils";
 
 chai.use(chaiHttp);
 
-describe('caffeine functional tests', () => {
+describe('health functional tests', () => {
     before(setupServer);
 
-    describe('/GET book', () => {
-        it('it should GET all the books', (done) => {
+    describe('/GET healthcheck', () => {
+        it('it should return healthy', (done) => {
             chai.request(app)
                 .get('/healthcheck')
                 .end((err, res) => {

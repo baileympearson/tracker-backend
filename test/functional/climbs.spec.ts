@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 
 const mockClimbs = require('../../mockdata/climbs');
 
-describe.only('/climbs functional tests', () => {
+describe('/climbs functional tests', () => {
     before(setupServer);
 
     beforeEach(async () => {

@@ -1,4 +1,5 @@
-import Joi from "joi";
+import Joi, { number, string } from "joi";
+import { makeFieldsRequired } from "../utils";
 
 const amountOfCaffeine = ['full caffeine', 'half caffeine', 'quarter caffeine', 'eighth caffeine ', 'decaf'] as const
 export type AmountOfCaffeine = typeof amountOfCaffeine[number]
@@ -18,7 +19,7 @@ export interface TotalCaffeineQuery {
     returnMgCaffeine?: boolean
 }
 
-export const totalCaffeineQuerySchema = Joi.object({
+export const totalCaffeineQuerySchema = Joi.object<TotalCaffeineQuery>({
     date: Joi.string().required(),
     returnMgCaffeine: Joi.boolean()
 })
@@ -31,4 +32,4 @@ const caffeineEntry = {
 
 export const partialCaffeineEntrySchema = Joi.object(caffeineEntry)
 
-export const caffeineEntrySchema = Joi.object(caffeineEntry).fork(Object.keys(caffeineEntry), (schema) => schema.required())
+export const caffeineEntrySchema = makeFieldsRequired(caffeineEntry)

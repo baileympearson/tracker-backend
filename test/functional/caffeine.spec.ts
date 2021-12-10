@@ -18,6 +18,11 @@ describe('/caffeine functional tests', () => {
         await client.db('tracker').collection('caffeine').insertMany(mockCaffeineData)
     })
 
+    afterEach(async () => {
+        const client = await connect()
+        await client.db('tracker').collection('caffeine').deleteMany({})
+    })
+
     describe('POST', () => {
         describe('POST /caffeine', () => {
             const invalidEntries: Partial<CaffeineEntry>[] = [
@@ -26,19 +31,16 @@ describe('/caffeine functional tests', () => {
                 { numericValue: .5 }
             ]
             invalidEntries.forEach(entry => {
-                it(`fails when the entry is ${entry}`, (done) => {
+                it(`fails when the entry is ${entry}`, async () => {
                     const invalidEntry: Partial<CaffeineEntry> = entry
-                    chai.request(app)
+                    const res = await chai.request(app)
                         .post('/caffeine')
                         .send(invalidEntry)
-                        .end((err, res) => {
-                            const { body, status } = res;
-                            expect(status).to.equal(400);
-                            expect(body).to.deep.equal({
-                                error: "malformed request"
-                            })
-                            done();
-                        });
+                    const { body, status } = res;
+                    expect(status).to.equal(400);
+                    expect(body).to.deep.equal({
+                        error: "malformed request"
+                    })
                 });
             })
 
@@ -48,91 +50,76 @@ describe('/caffeine functional tests', () => {
                 numericValue: 1
             }
 
-            it.only('should successfully add the document', (done) => {
-                chai.request(app)
+            it('should successfully add the document', async () => {
+                const res = await chai.request(app)
                     .post('/caffeine')
                     .send(validEntry)
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body as CaffeineEntry
-                        expect(status).to.equal(201);
-                        expect(body.date).to.equal(validEntry.date)
-                        expect(body.numericValue).to.equal(validEntry.numericValue)
-                        expect(body.value).to.equal(validEntry.value)
-                        expect(body).to.have.property('_id')
-                        done();
-                    });
+
+                const { status } = res;
+                const body = res.body as CaffeineEntry
+                expect(status).to.equal(201);
+                expect(body).to.deep.include(validEntry);
+                expect(body).to.have.property('_id')
             });
         });
     })
 
     describe('GET', () => {
         describe('GET /', () => {
-            it('with no filter options, it returns everything in db', (done) => {
-                chai.request(app)
+            it('with no filter options, it returns everything in db', async () => {
+                const res = await chai.request(app)
                     .get('/caffeine')
                     .send({})
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body 
-                        expect(status).to.equal(200);
-                        expect(body).to.have.property('length').to.equal(mockCaffeineData.length)
-                        done();
-                    });
+                const { status } = res;
+                const body = res.body
+                expect(status).to.equal(200);
+                expect(body).to.have.property('length').to.equal(mockCaffeineData.length)
             });
 
-            it('returns all the entries for a given day', (done) => {
-                chai.request(app)
+            it('returns all the entries for a given day', async () => {
+                const res = await chai.request(app)
                     .get('/caffeine')
                     .send({ date: "2021-12-07" })
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body 
-                        expect(status).to.equal(200);
-                        expect(body).to.have.property('length').to.equal(3)
-                        done();
-                    });
+
+                const { status } = res;
+                const body = res.body
+                expect(status).to.equal(200);
+                expect(body).to.have.property('length').to.equal(3)
             });
         });
 
         describe('GET /totalCaffeine', () => {
-            it('return the total if the days exist and no mg caffeine specified', (done) => {
-                chai.request(app)
+            it('return the total if the days exist and no mg caffeine specified', async () => {
+                const res = await chai.request(app)
                     .get('/caffeine/totalCaffeine')
-                    .send({ date: "2021-12-07"})
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body 
-                        expect(status).to.equal(200);
-                        expect(body.total).to.equal(2)
-                        done();
-                    });
+                    .send({ date: "2021-12-07" })
+
+                const { status } = res;
+                const body = res.body
+                expect(status).to.equal(200);
+                expect(body.total).to.equal(2)
             });
 
-            it('return the total of 0 if the date DNE in the database', (done) => {
-                chai.request(app)
+            it('return the total of 0 if the date DNE in the database', async () => {
+                const res = await chai.request(app)
                     .get('/caffeine/totalCaffeine')
-                    .send({ date: "2019-12-07"})
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body 
-                        expect(status).to.equal(200);
-                        expect(body.total).to.equal(0)
-                        done();
-                    });
+                    .send({ date: "2019-12-07" })
+
+                const { status } = res;
+                const body = res.body
+                expect(status).to.equal(200);
+                expect(body.total).to.equal(0)
             });
 
-            it('return the total mg of caffeine if returnMgCaffeine is set to true', (done) => {
-                chai.request(app)
+            it('return the total mg of caffeine if returnMgCaffeine is set to true', async () => {
+                const res = await chai.request(app)
                     .get('/caffeine/totalCaffeine')
                     .send({ date: "2021-12-07", returnMgCaffeine: true })
-                    .end((err, res) => {
-                        const { status } = res;
-                        const body = res.body 
-                        expect(status).to.equal(200);
-                        expect(body.total).to.equal(280)
-                        done();
-                    });
+
+                const { status } = res;
+                const body = res.body
+                expect(status).to.equal(200);
+                expect(body.total).to.equal(280)
             });
         });
     })
